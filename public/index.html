@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRIDBEE // COMMAND_CENTER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --dark-bg: #050505;
+            --terminal-gray: #1a1a1a;
+            --alert-red: #ff3131;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--neon-green);
+            font-family: 'Fira Code', monospace;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+        }
+
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.15;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 0.15;
+            }
+
+            50% {
+                opacity: 0.12;
+            }
+
+            100% {
+                opacity: 0.15;
+            }
+        }
+
+        .terminal-border {
+            border: 1px solid var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
+        }
+
+        .grid-cell {
+            border: 1px solid rgba(0, 255, 65, 0.1);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .grid-cell::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: radial-gradient(circle, var(--neon-green) 0%, transparent 70%);
+        }
+
+        .cell-active::after {
+            opacity: 0.2;
+        }
+
+        .cell-worker {
+            background-color: rgba(0, 255, 65, 0.1);
+            border-color: var(--neon-green);
+        }
+
+        .cell-prince {
+            background-color: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            box-shadow: inset 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+
+        .cell-lead {
+            background-color: rgba(139, 92, 246, 0.2);
+            border-color: #8b5cf6;
+        }
+
+        .cell-empty {
+            background-color: rgba(0, 255, 65, 0.02);
+        }
+
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 65, 0.1);
+            position: absolute;
+            animation: scanline 8s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        .glitch-text {
+            text-shadow: 2px 0 var(--alert-red), -2px 0 #00ffff;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background-color: var(--neon-green);
+            box-shadow: 0 0 8px var(--neon-green);
+        }
+
+        .status-offline {
+            background-color: var(--alert-red);
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-green);
+        }
+
+        .pmi-bar {
+            height: 2px;
+            background: var(--neon-green);
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+
+<body class="p-2 md:p-6">
+    <div class="crt-overlay"></div>
+
+    <!-- Main Container -->
+    <div class="flex-1 flex flex-col terminal-border p-4 bg-black/90 relative overflow-hidden">
+        <div class="scanline"></div>
+
+        <!-- Header -->
+        <header class="flex justify-between items-start border-b border-green-500/30 pb-4 mb-6">
+            <div class="flex flex-col">
+                <h1 class="text-xl md:text-3xl font-bold tracking-tighter glitch-text">
+                    GRIDBEE://HIVE_COMMAND_CENTER
+                </h1>
+                <div class="flex items-center mt-1 text-[10px] md:text-xs">
+                    <span class="status-dot status-online" id="status-dot"></span>
+                    <span id="status-text" class="opacity-70 italic text-green-500">INIT_HANDSHAKE...</span>
+                </div>
+            </div>
+
+            <nav class="flex gap-4">
+                <a href="/architecture.html"
+                    class="px-2 py-1 border border-green-500/50 hover:bg-green-500 hover:text-black transition-all text-[10px] md:text-xs uppercase">
+                    VIEW_ARCHITECTURE
+                </a>
+                <div class="hidden md:flex flex-col items-end text-[10px] md:text-xs opacity-60">
+                    <span>SYS_UPTIME: <span id="uptime">00:00:00</span></span>
+                    <span>SESSION_ID: <span id="session-id">----</span></span>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Main Workspace -->
+        <div class="flex-1 flex flex-col md:flex-row gap-4 min-h-0">
+
+            <!-- Left Panel: Grid Matrix -->
+            <div class="flex-[2] flex flex-col bg-green-950/10 border border-green-500/20 p-4 relative">
+                <div class="flex justify-between items-center mb-4 text-[10px] uppercase opacity-60">
+                    <span>- GRID_MATRIX_VIEW (10x10) -</span>
+                    <span id="coord-hover">[COORD: --, --]</span>
+                </div>
+
+                <div class="flex-1 flex justify-center items-center overflow-auto p-4">
+                    <div id="grid-container"
+                        class="grid grid-cols-10 gap-1 aspect-square max-h-full w-full max-w-[500px]">
+                        <!-- JS generated cells -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Telemetry & Logs -->
+            <div class="flex-1 flex flex-col gap-4 min-h-0">
+
+                <!-- Telemetry Stats -->
+                <div class="bg-black border border-green-500/30 p-4">
+                    <h3 class="text-[10px] uppercase opacity-40 mb-3 tracking-widest">LIVE_TELEMETRY</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="border-l border-green-500/50 pl-2">
+                            <span class="block text-[10px] opacity-60">CONNECTED_NODES</span>
+                            <span class="text-xl font-bold font-mono" id="bee-count">00</span>
+                        </div>
+                        <div class="border-l border-green-500/50 pl-2">
+                            <span class="block text-[10px] opacity-60">ACTIVE_BLOCKS</span>
+                            <span class="text-xl font-bold font-mono" id="active-jobs">00</span>
+                        </div>
+                        <div class="border-l border-green-500/50 pl-2">
+                            <span class="block text-[10px] opacity-60">GRID_THROUGHPUT</span>
+                            <span class="text-xl font-bold font-mono" id="throughput">0.0 G/s</span>
+                        </div>
+                        <div class="border-l border-green-500/50 pl-2">
+                            <span class="block text-[10px] opacity-60">HIVE_STABILITY</span>
+                            <span class="text-xl font-bold font-mono text-green-400">99.8%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Log -->
+                <div class="flex-1 bg-black border border-green-500/30 p-4 flex flex-col min-h-0">
+                    <div class="flex justify-between items-center bg-green-900/20 px-2 py-1 mb-2">
+                        <h3 class="text-[10px] uppercase tracking-widest">SYSTEM_LOGS</h3>
+                        <span class="text-[8px] animate-pulse">RECORDING...</span>
+                    </div>
+                    <div id="logs"
+                        class="flex-1 overflow-y-auto text-[10px] md:text-xs font-mono space-y-1 text-green-500/70 p-1">
+                        <!-- JS generated logs -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer Footer Status -->
+        <footer
+            class="mt-4 pt-2 border-t border-green-500/20 flex justify-between items-center text-[8px] md:text-[10px] opacity-40 font-mono">
+            <span>EXECUTING: ROOT@GRIDBEE_TERMINAL</span>
+            <div class="flex gap-4">
+                <span>BUFFER_STATUS: NOMINAL</span>
+                <span>PKT_LOSS: 0.00%</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

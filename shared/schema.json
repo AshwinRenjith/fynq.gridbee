@@ -1,0 +1,234 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "BeaconPayload": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "BEACON"
+        },
+        "queenIp": {
+          "type": "string",
+          "format": "ipv4"
+        },
+        "hivePort": {
+          "type": "integer",
+          "default": 41234
+        },
+        "hiveVersion": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type",
+        "queenIp",
+        "hivePort",
+        "hiveVersion",
+        "timestamp"
+      ]
+    },
+    "BeeHandshake": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "HANDSHAKE"
+        },
+        "beeId": {
+          "type": "string"
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "pmi": {
+              "type": "number"
+            },
+            "vramFree": {
+              "type": "number"
+            },
+            "ramFree": {
+              "type": "number"
+            },
+            "cpuIdle": {
+              "type": "number"
+            },
+            "jitter": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "vramFree",
+            "ramFree",
+            "cpuIdle"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "beeId",
+        "metrics"
+      ]
+    },
+    "QueenAck": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "ACK"
+        },
+        "status": {
+          "const": "ACCEPTED"
+        },
+        "coordinates": {
+          "type": "object",
+          "properties": {
+            "i": {
+              "type": "integer"
+            },
+            "j": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "i",
+            "j"
+          ]
+        },
+        "role": {
+          "enum": [
+            "WORKER",
+            "PRINCE",
+            "LEAD"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "status",
+        "coordinates",
+        "role"
+      ]
+    },
+    "AppendEntries": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "APPEND_ENTRIES"
+        },
+        "term": {
+          "type": "integer"
+        },
+        "leaderId": {
+          "type": "string"
+        },
+        "prevLogIndex": {
+          "type": "integer"
+        },
+        "prevLogTerm": {
+          "type": "integer"
+        },
+        "entries": {
+          "type": "array"
+        },
+        "leaderCommit": {
+          "type": "integer"
+        },
+        "hiveState": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "type",
+        "term",
+        "leaderId",
+        "hiveState"
+      ]
+    },
+    "RequestVote": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "REQUEST_VOTE"
+        },
+        "term": {
+          "type": "integer"
+        },
+        "candidateId": {
+          "type": "string"
+        },
+        "lastLogIndex": {
+          "type": "integer"
+        },
+        "lastLogTerm": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type",
+        "term",
+        "candidateId"
+      ]
+    },
+    "VoteAck": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "VOTE_ACK"
+        },
+        "term": {
+          "type": "integer"
+        },
+        "voteGranted": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "type",
+        "term",
+        "voteGranted"
+      ]
+    },
+    "JobSubmission": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "JOB_SUBMISSION"
+        },
+        "jobName": {
+          "type": "string"
+        },
+        "fileSize": {
+          "type": "integer"
+        },
+        "data": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "jobName",
+        "data"
+      ]
+    },
+    "JobAck": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "JOB_ACK"
+        },
+        "jobId": {
+          "type": "string"
+        },
+        "status": {
+          "const": "RECEIVED"
+        }
+      },
+      "required": [
+        "type",
+        "jobId",
+        "status"
+      ]
+    }
+  }
+}

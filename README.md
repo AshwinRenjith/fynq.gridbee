@@ -91,6 +91,36 @@ stateDiagram-v2
     Sign --> [*]: BROADCAST
 ```
 
+### 4. The Circulatory System (Execution)
+Computation adheres to **Cannon's Algorithm** for systolic matrix multiplication. Data pulses rhythmically across the Torus.
+
+```mermaid
+sequenceDiagram
+    participant N1 as BEE_0,0
+    participant N2 as BEE_0,1
+    participant N3 as BEE_1,0
+    
+    Note over N1,N2: SYSTOLIC PULSE_01
+    N1->>N2: PULSE_EAST [Matrix_Block_A]
+    N1->>N3: PULSE_SOUTH [Matrix_Block_B]
+    
+    rect rgb(20, 20, 20)
+        Note over N1: COMPUTE(TENSOR_OP)
+    end
+    
+    N2-->>N1: ACK_SYNC
+```
+
+---
+
+## 🛠️ Built With
+
+![NodeJS](https://img.shields.io/badge/Node.js-18.x-339933?style=flat-square&logo=nodedotjs&logoColor=white) 
+![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python&logoColor=white) 
+![WebSockets](https://img.shields.io/badge/Protocol-WebSockets-000000?style=flat-square&logo=socketdotio&logoColor=white) 
+![Raft](https://img.shields.io/badge/Consensus-Raft-E65100?style=flat-square) 
+![Mermaid](https://img.shields.io/badge/Diagrams-Mermaid.js-FF4081?style=flat-square&logo=mermaid&logoColor=white)
+
 ---
 
 ## � Sub-System Breakdown

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRIDBEE // MISSION_INTEL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark'
+        });
+    </script>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --dark-bg: #050505;
+            --high-vis: #facc15;
+            --alert: #ef4444;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--neon-green);
+            font-family: 'Fira Code', monospace;
+            background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+        }
+
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.15;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 0.15;
+            }
+
+            50% {
+                opacity: 0.12;
+            }
+
+            100% {
+                opacity: 0.15;
+            }
+        }
+
+        .terminal-panel {
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            background: rgba(0, 0, 0, 0.9);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+        }
+
+        .dossier-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid rgba(0, 255, 65, 0.1);
+            background: rgba(0, 255, 65, 0.02);
+        }
+
+        .dossier-card:hover {
+            border-color: var(--neon-green);
+            transform: translateY(-4px);
+            background: rgba(0, 255, 65, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+
+        .step-active {
+            background-color: var(--neon-green);
+            color: black;
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .progress-line {
+            height: 2px;
+            background: rgba(0, 255, 65, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--neon-green);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .workflow-stat-box {
+            border-left: 2px solid var(--neon-green);
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            font-size: 8px;
+            padding: 1px 4px;
+            border: 1px solid currentColor;
+            text-transform: uppercase;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-green);
+        }
+
+        .scan-anim {
+            width: 100%;
+            height: 1px;
+            background: var(--neon-green);
+            position: absolute;
+            animation: scan 4s linear infinite;
+            opacity: 0.1;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="p-4 md:p-8">
+    <div class="crt-overlay"></div>
+
+    <div class="max-w-6xl mx-auto space-y-12">
+
+        <!-- Header Section -->
+        <header class="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-green-500/30 pb-6">
+            <div>
+                <h1 class="text-3xl md:text-5xl font-bold tracking-tighter text-white">
+                    <span class="text-green-500 opacity-50 font-light">INTEL//</span>ARCHITECTURE_OVERVIEW
+                </h1>
+                <p class="text-green-500/60 mt-2 font-mono text-sm">
+                    CLASSIFICATION: LEVEL_05_COMMANDER // HIVE_STATUS: NOMINAL
+                </p>
+            </div>
+            <div class="flex gap-2 text-xs">
+                <a href="/"
+                    class="px-4 py-2 bg-green-900/20 border border-green-500 hover:bg-green-500 hover:text-black transition-all">
+                    BACK_TO_HQ
+                </a>
+            </div>
+        </header>
+
+        <!-- MISSION BRIEFING -->
+        <section class="grid md:grid-cols-3 gap-8 items-center">
+            <div class="md:col-span-2 space-y-4">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <span class="bg-green-500 text-black px-2">01</span> MISSION_BRIEF
+                </h2>
+                <p class="text-green-500/80 leading-relaxed text-sm md:text-base">
+                    Gridbee is not just a network; it's a living matrix. By mimicking biological swarms, we've achieved
+                    heavy-duty AI training on consumer hardware.
+                    No more monolithic data centers. We use the deadweight of thousands of GPUs to forge intelligence.
+                </p>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+                    <div class="workflow-stat-box">
+                        <span class="block text-[8px] opacity-50">TOPOLOGY</span>
+                        <span class="text-xs font-bold text-white">10x10 TORUS</span>
+                    </div>
+                    <div class="workflow-stat-box">
+                        <span class="block text-[8px] opacity-50">LATENCY_SYNC</span>
+                        <span class="text-xs font-bold text-white">SYSTOLIC_PULSE</span>
+                    </div>
+                    <div class="workflow-stat-box">
+                        <span class="block text-[8px] opacity-50">SECURITY</span>
+                        <span class="text-xs font-bold text-white">IMMUNE_MESH</span>
+                    </div>
+                    <div class="workflow-stat-box">
+                        <span class="block text-[8px] opacity-50">SCALABILITY</span>
+                        <span class="text-xs font-bold text-white">RECURSIVE_GLS</span>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="terminal-panel p-4 aspect-square flex flex-col items-center justify-center relative overflow-hidden hidden md:flex">
+                <div class="scan-anim"></div>
+                <div class="text-[100px] font-bold opacity-10 select-none">BEE</div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <pre class="text-[10px] leading-3 text-green-500/40">
+   _   _
+  / \ / \
+ (   |   )
+  \ / \ /
+   '   '
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- NODE DOSSIERS (GAMIFIED ROLES) -->
+        <section class="space-y-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <span class="bg-green-500 text-black px-2">02</span> NODE_DOSSIERS
+            </h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                <!-- Queen Dossier -->
+                <div class="dossier-card p-6 space-y-4" onclick="showIntel('queen')">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs bg-yellow-500/20 text-yellow-500 px-2 tag">UNIQUE</span>
+                        <span class="text-xs opacity-50">#001</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">THE_QUEEN</h3>
+                    <p class="text-[10px] opacity-60">Central Orchestrator. Resource allocator and final unmasker.</p>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[8px] uppercase"><span>Intelligence</span> <span
+                                class="text-white">MAX</span></div>
+                        <div class="w-full bg-green-900/30 h-1">
+                            <div class="bg-yellow-500 h-full w-[100%]"></div>
+                        </div>
+                        <div class="flex justify-between text-[8px] uppercase"><span>Redundancy</span> <span
+                                class="text-white">NONE</span></div>
+                        <div class="w-full bg-green-900/30 h-1">
+                            <div class="bg-red-500 h-full w-[10%]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prince Dossier -->
+                <div class="dossier-card p-6 space-y-4" onclick="showIntel('prince')">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs bg-green-500/20 text-green-500 px-2 tag">H_AVAIL</span>
+                        <span class="text-xs opacity-50">#00X</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">PRINCE_CLASS</h3>
+                    <p class="text-[10px] opacity-60">High-VRAM Nodes. RAFT consensus participants and failover leaders.
+                    </p>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[8px] uppercase"><span>Intelligence</span> <span
+                                class="text-white">MED</span></div>
+                        <div class="w-full bg-green-900/30 h-1">
+                            <div class="bg-green-500 h-full w-[60%]"></div>
+                        </div>
+                        <div class="flex justify-between text-[8px] uppercase"><span>Redundancy</span> <span
+                                class="text-white">MAX</span></div>
+                        <div class="w-full bg-green-900/30 h-1">
+                            <div class="bg-green-500 h-full w-[100%]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lead Dossier -->
+                <div class="dossier-card p-6 space-y-4" onclick="showIntel('lead')">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs bg-purple-500/20 text-purple-500 px-2 tag">SHARD_MGR</span>
+                        <span class="text-xs opacity-50">#0XX</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">LEAD_BEE</h3>
+                    <p class="text-[10px] opacity-60">Regional managers. Handling Recursive Micro-Sharding & Greco-Latin
+                        Squares.</p>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[8px] uppercase"><span>Strategy</span> <span
+                                class="text-white">HIGH</span></div>
+                        <div class="w-full bg-green-900/30 h-1">
+                            <div class="bg-purple-500 h-full w-[80%]"></div>
+                        </div>
+                        <div class="flex justify-between text-[8px] uppercase"><span>Capacity</span> <span
+                                class="text-white">MED</span></div>
+                        <div class="w-full bg-green-900/30 h-1">
+                            <div class="bg-purple-500 h-full w-[50%]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Worker Dossier -->
+                <div class="dossier-card p-6 space-y-4" onclick="showIntel('worker')">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs bg-blue-500/20 text-blue-500 px-2 tag">SWARM</span>
+                        <span class="text-xs opacity-50">#XXX</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">WORKER_DRONE</h3>
+                    <p class="text-[10px] opacity-60">The backbone. Executing tensor pulses and P2P neighbor gossip.</p>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[8px] uppercase"><span>Compute</span> <span
+                                class="text-white">ULTRA</span></div>
+                        <div class="w-full bg-green-900/30 h-1">
+                            <div class="bg-blue-500 h-full w-[95%]"></div>
+                        </div>
+                        <div class="flex justify-between text-[8px] uppercase"><span>Autonomy</span> <span
+                                class="text-white">LOW</span></div>
+                        <div class="w-full bg-green-900/30 h-1">
+                            <div class="bg-blue-500 h-full w-[20%]"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- INTERACTIVE WORKFLOW (SIMULATOR) -->
+        <section class="space-y-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <span class="bg-green-500 text-black px-2">03</span> TRAINING_WORKFLOW_SIMULATOR
+            </h2>
+
+            <div class="terminal-panel p-6 space-y-8">
+                <!-- Stepper UI -->
+                <div class="flex justify-between items-center relative gap-2">
+                    <div class="absolute inset-0 top-1/2 -translate-y-1/2 progress-line w-full z-0">
+                        <div id="workflow-progress" class="progress-fill"></div>
+                    </div>
+                    <div onclick="setStep(1)" id="step-btn-1"
+                        class="w-8 h-8 rounded-full border border-green-500 bg-black flex items-center justify-center text-[10px] font-bold cursor-pointer z-10 step-active">
+                        01</div>
+                    <div onclick="setStep(2)" id="step-btn-2"
+                        class="w-8 h-8 rounded-full border border-green-500 bg-black flex items-center justify-center text-[10px] font-bold cursor-pointer z-10">
+                        02</div>
+                    <div onclick="setStep(3)" id="step-btn-3"
+                        class="w-8 h-8 rounded-full border border-green-500 bg-black flex items-center justify-center text-[10px] font-bold cursor-pointer z-10">
+                        03</div>
+                    <div onclick="setStep(4)" id="step-btn-4"
+                        class="w-8 h-8 rounded-full border border-green-500 bg-black flex items-center justify-center text-[10px] font-bold cursor-pointer z-10">
+                        04</div>
+                    <div onclick="setStep(5)" id="step-btn-5"
+                        class="w-8 h-8 rounded-full border border-green-500 bg-black flex items-center justify-center text-[10px] font-bold cursor-pointer z-10">
+                        05</div>
+                </div>
+
+                <!-- Simulation Output -->
+                <div class="grid lg:grid-cols-2 gap-8 min-h-[300px]">
+                    <div class="bg-black border border-green-500/20 p-4 font-mono text-xs space-y-4">
+                        <div id="workflow-console" class="space-y-1">
+                            <span class="block opacity-30">[SIM_BOOT] Init simulation layer...</span>
+                            <span class="block text-white">[READY] Select a phase to begin analysis.</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center bg-green-950/5 p-4 relative overflow-hidden">
+                        <div id="workflow-desc" class="text-center space-y-4">
+                            <h4 id="workflow-title" class="text-lg font-bold">SYSTEM_IDLE</h4>
+                            <p id="workflow-text" class="text-xs opacity-60 px-8">Ready for mission briefing
+                                initialization. Select Phase 01 to start.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center gap-4">
+                    <button onclick="prevStep()"
+                        class="px-4 py-1 border border-green-500/50 hover:bg-green-500/20 transition-all text-[10px]">PREV_PHASE</button>
+                    <button onclick="nextStep()"
+                        class="px-4 py-1 bg-green-500 text-black font-bold hover:bg-white transition-all text-[10px]">NEXT_PHASE</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SYSTEM BLUEPRINTS (TECHNICAL DIAGRAMS) -->
+        <section class="space-y-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <span class="bg-green-500 text-black px-2">04</span> SYSTEM_BLUEPRINTS
+            </h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+
+                <!-- Torus Topology -->
+                <div class="terminal-panel p-4 space-y-4">
+                    <div class="flex justify-between items-center border-b border-green-500/20 pb-2">
+                        <h3 class="text-xs font-bold uppercase tracking-wider">[TOPOLOGY_MAPPING]</h3>
+                        <span class="text-[8px] opacity-40 italic">v1.2_TORUS_MESH</span>
+                    </div>
+                    <div class="mermaid">
+                        graph TD
+                        User[EXT_CLIENT] -->|WSS| Queen{QUEEN_NODE}
+                        Queen -->|UDP| Discovery[DISCOVERY]
+                        Discovery -->|JOIN| W1[BEE_0,0]
+                        Discovery -->|JOIN| W2[BEE_0,1]
+
+                        subgraph Mesh ["HIVE_TORUS_10x10"]
+                        W1 <--> W2
+                            W1 <--> W3[BEE_1,0]
+                                W2 <--> W4[BEE_1,1]
+                                    W3 <--> W4
+                                        end
+
+                                        style Mesh fill:transparent,stroke:#00ff41,stroke-dasharray: 5 5
+                                        style Queen fill:#003300,stroke:#00ff41
+                    </div>
+                    <p class="text-[9px] opacity-50 font-mono italic">Primary network handshake and spatial allocation
+                        logic.</p>
+                </div>
+
+                <!-- Raft Consensus -->
+                <div class="terminal-panel p-4 space-y-4">
+                    <div class="flex justify-between items-center border-b border-green-500/20 pb-2">
+                        <h3 class="text-xs font-bold uppercase tracking-wider">[HA_CONSENSUS_FLOW]</h3>
+                        <span class="text-[8px] opacity-40 italic">v2.1_RAFT_FAILOVER</span>
+                    </div>
+                    <div class="mermaid">
+                        sequenceDiagram
+                        participant Q as [QUEEN]
+                        participant P1 as [PRINCE_A]
+                        participant P2 as [PRINCE_B]
+
+                        Note over Q,P2: Normal Sync (Heartbeat)
+                        Q->>P1: HB_ACK
+                        Q->>P2: HB_ACK
+
+                        Note over P1,P2: -- QUEEN_OFFLINE --
+                        P1->>P1: ELECTION_TIMEOUT
+                        P1->>P2: REQUEST_VOTE(TERM+1)
+                        P2-->>P1: VOTE_GRANTED
+                        Note over P1: PROMOTED_TO_QUEEN
+                    </div>
+                    <p class="text-[9px] opacity-50 font-mono italic">Automatic failover and leader promotion for
+                        zero-downtime training.</p>
+                </div>
+
+                <!-- Sharding Recursive -->
+                <div class="terminal-panel p-4 space-y-4">
+                    <div class="flex justify-between items-center border-b border-green-500/20 pb-2">
+                        <h3 class="text-xs font-bold uppercase tracking-wider">[RECURSIVE_SHARDING]</h3>
+                        <span class="text-[8px] opacity-40 italic">v3.0_GLS_DIVIDE</span>
+                    </div>
+                    <div class="mermaid">
+                        flowchart TD
+                        M(MODEL_BLOB) -->|DIVIDE| B1(BLOCK_A)
+                        M -->|DIVIDE| B2(BLOCK_B)
+
+                        subgraph Lead ["LEAD_PROCESS"]
+                        B1 --> GLS{GLS_ENGINE}
+                        GLS --> S1[TASK_01]
+                        GLS --> S2[TASK_02]
+                        end
+
+                        S1 --> W1[WORKER_X]
+                        S2 --> W2[WORKER_Y]
+
+                        style Lead fill:#1a0033,stroke:#8b5cf6
+                    </div>
+                    <p class="text-[9px] opacity-50 font-mono italic">Orthogonal data distribution via Greco-Latin
+                        Squares.</p>
+                </div>
+
+                <!-- Immune State -->
+                <div class="terminal-panel p-4 space-y-4">
+                    <div class="flex justify-between items-center border-b border-green-500/20 pb-2">
+                        <h3 class="text-xs font-bold uppercase tracking-wider">[SECURITY_LIFECYCLE]</h3>
+                        <span class="text-[8px] opacity-40 italic">v5.0_BFT_VERIFY</span>
+                    </div>
+                    <div class="mermaid">
+                        stateDiagram-v2
+                        [*] --> Verify
+                        Verify --> Sign: VALID_SIG
+                        Verify --> Quarantine: MALICIOUS
+
+                        state "GOSSIP_PROPAGATION" as Sign
+                        state "BLOOM_FILTER_BLACK" as Quarantine
+
+                        Quarantine --> [*]: ISOLATED
+                        Sign --> [*]: BROADCAST
+                    </div>
+                    <p class="text-[9px] opacity-50 font-mono italic">Decentralized threat detection and
+                        neighbor-to-neighbor blacklisting.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- REAL WORLD TACTICS -->
+        <section class="space-y-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <span class="bg-green-500 text-black px-2">05</span> REAL_WORLD_USE_CASES
+            </h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <div class="terminal-panel p-4 space-y-3">
+                    <span
+                        class="bg-yellow-500/10 text-yellow-500 text-[8px] px-2 border border-yellow-500/30">HOSPITALS</span>
+                    <h3 class="text-sm font-bold text-white uppercase italic">Private Med-LLM</h3>
+                    <p class="text-[10px] opacity-60 leading-relaxed">Training diagnostic models across multiple clinics
+                        without patient data ever leaving local nodes. The Queen only unmasks weights, never raw data.
+                    </p>
+                </div>
+
+                <div class="terminal-panel p-4 space-y-3">
+                    <span class="bg-blue-500/10 text-blue-500 text-[8px] px-2 border border-blue-500/30">FINANCE</span>
+                    <h3 class="text-sm font-bold text-white uppercase italic">Fractal Audit Grid</h3>
+                    <p class="text-[10px] opacity-60 leading-relaxed">Processing millions of micro-transactions per
+                        second using the Systolic Pulse to find fraud patterns without a central server bottleneck.</p>
+                </div>
+
+                <div class="terminal-panel p-4 space-y-3">
+                    <span
+                        class="bg-purple-500/10 text-purple-500 text-[8px] px-2 border border-purple-500/30">CREATIVES</span>
+                    <h3 class="text-sm font-bold text-white uppercase italic">Decentralized Rendering</h3>
+                    <p class="text-[10px] opacity-60 leading-relaxed">Utilizing 10,000 "Bees" to render 8K frames in
+                        parallel, where each Lead handles a specific texture block (Recursive Sharding).</p>
+                </div>
+
+            </div>
+        </section>
+
+        <footer class="mt-20 pt-10 border-t border-green-500/10 flex flex-col items-center gap-4 select-none">
+            <pre class="text-[6px] text-green-500" style="filter: drop-shadow(0 0 5px var(--neon-green))">
+   ____ ____ ___ ____  ____  _____ _____ 
+  / ___|  _ \_ _|  _ \| __ )| ____| ____|
+ | |  _| |_) | || | | |  _ \|  _| |  _|  
+ | |_| |  _ <| || |_| | |_) | |___| |___ 
+  \____|_| \_\___|____/|____/|_____|_____|
+            </pre>
+            <span class="text-[8px] tracking-[4px] text-green-500"
+                style="text-shadow: 0 0 8px var(--neon-green)">GRIDBEE CORE // UNIT_5 // BUILT_ON_FYNQ</span>
+        </footer>
+
+    </div>
+
+    <!-- UI Logic -->
+    <script>
+        let currentStep = 0;
+        const workflowSteps = [
+            {
+                title: "DISCOVERY_PHASE",
+                text: "The Queen broadcasts a UDP encrypted beacon. New Bees respond with Hardware PMI scores. The Grid is dynamically allocated.",
+                console: [
+                    "UDP -> BROADCAST(PORT:41234)",
+                    "ACK <- BEE(E7B9): PMI=82.4",
+                    "ACK <- BEE(A113): PMI=45.1",
+                    "GRID_ALLOC -> CELL(0,0) ASSIGNED TO E7B9"
+                ]
+            },
+            {
+                title: "DIVIDE_&_CONQUER",
+                text: "Lead Bees take large model blocks and perform Recursive Micro-Sharding. Greco-Latin Squares ensure every node gets a unique task/data pair.",
+                console: [
+                    "LOAD -> MODEL_BLOCK_A (4GB)",
+                    "LEAD_INIT -> SHARDING_ENGINE",
+                    "GEN_GLS -> 10x10 ORTHOGONAL SQUARE",
+                    "DISPATCH -> 100 UNIQUE PACKETS SENT"
+                ]
+            },
+            {
+                title: "SYSTOLIC_PULSE",
+                text: "Compute begins in rhythmic waves. Each Bee pulses its result to the East/South neighbor. The network acts as one giant GPU core.",
+                console: [
+                    "PULSE_01 -> SYNC_LATCH(PASSED)",
+                    "WORKER(0,0) -> COMPUTE(TENSOR_MULT)",
+                    "MESH_TX -> DATA_FLOW_EAST(OK)",
+                    "PACEMAKER -> WAVE_COMPLETE"
+                ]
+            },
+            {
+                title: "IMMUNE_HANDSHAKE",
+                text: "Lymphocytes verify results. If a signature mismatch occurs, the node is quarantined. Gossip protocol alerts neighbors to blacklist the bad actor.",
+                console: [
+                    "BFT_SIGN -> VERIFYING_BLOCK_77",
+                    "SIG_CHECK -> VAL_MATCH",
+                    "BLOOM_FILTER -> UPDATE(SUCCESS)",
+                    "HIVE_MIND -> INTEGRITY_100%"
+                ]
+            },
+            {
+                title: "FINAL_UNMASKING",
+                text: "Results are sent back to the Queen. The Queen reverses the obfuscation (x10 scale) and reassembles the final optimized model.",
+                console: [
+                    "RESULT -> COLLECTING_FROM_LEADS",
+                    "DEOBFUSCATE -> VAL / 10.0",
+                    "ASSEMBLY -> MODEL_OPTIMIZED",
+                    "MISSION_COMPLETE -> SAVING_TO_DOCS"
+                ]
+            }
+        ];
+
+        function setStep(step) {
+            currentStep = step - 1;
+            updateStep();
+        }
+
+        function nextStep() {
+            if (currentStep < workflowSteps.length - 1) {
+                currentStep++;
+                updateStep();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateStep();
+            }
+        }
+
+        function updateStep() {
+            const step = workflowSteps[currentStep];
+            const progress = ((currentStep + 1) / workflowSteps.length) * 100;
+
+            // UI Updates
+            document.getElementById('workflow-progress').style.width = `${progress}%`;
+            document.getElementById('workflow-title').innerText = step.title;
+            document.getElementById('workflow-text').innerText = step.text;
+
+            // Console Updates
+            const consoleEl = document.getElementById('workflow-console');
+            consoleEl.innerHTML = '';
+            step.console.forEach((line, i) => {
+                const span = document.createElement('span');
+                span.className = 'block opacity-0 translate-y-2 transition-all duration-300';
+                span.style.transitionDelay = `${i * 100}ms`;
+                span.innerText = `> ${line}`;
+                consoleEl.appendChild(span);
+                setTimeout(() => span.classList.remove('opacity-0', 'translate-y-2'), 50);
+            });
+
+            // Button Updates
+            for (let i = 1; i <= 5; i++) {
+                const btn = document.getElementById(`step-btn-${i}`);
+                if (i <= currentStep + 1) {
+                    btn.classList.add('step-active');
+                } else {
+                    btn.classList.remove('step-active');
+                }
+            }
+        }
+
+        function showIntel(role) {
+            const messages = {
+                queen: "QUEEN_NODE: Primary entry point. Do not let this node go offline unless a Prince is active for failover.",
+                prince: "PRINCE_CLASS: Critical for network resilience. Requires high VRAM to hold the RAFT state logs.",
+                lead: "LEAD_BEE: Strategic sharding layer. Offloads optimization tasks from the Queen to the swarm.",
+                worker: "WORKER_DRONE: Maximum horizontal scale. These are the muscles of the Hive."
+            };
+            alert(`[DECODED_INTEL] ${messages[role]}`);
+        }
+    </script>
+</body>
+
+</html>
